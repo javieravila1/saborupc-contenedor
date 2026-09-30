@@ -10,16 +10,46 @@
   function cargarScript(url) {
     if (!scripts[url]) {
       scripts[url] = new Promise(function (resolve, reject) {
+        const inicio = performance.now();
+
         const s = document.createElement('script');
-        s.src = url + '?v=' + Date.now(); // sin caché: vemos cada "despliegue" al recargar
-        s.onload = resolve;
+        s.src = url + '?v=' + Date.now();
+
+        s.onload = function () {
+          const fin = performance.now();
+          const tiempo = fin - inicio;
+
+          console.log(
+            '[Observabilidad] MFE cargado: ' +
+            url +
+            ' en ' +
+            tiempo.toFixed(2) +
+            ' ms'
+          );
+
+          resolve();
+        };
+
         s.onerror = function () {
+          const fin = performance.now();
+          const tiempo = fin - inicio;
+
+          console.error(
+            '[Observabilidad] Error cargando MFE: ' +
+            url +
+            ' después de ' +
+            tiempo.toFixed(2) +
+            ' ms'
+          );
+
           delete scripts[url];
           reject(new Error('No se pudo cargar ' + url));
         };
+
         document.head.appendChild(s);
       });
     }
+
     return scripts[url];
   }
 
