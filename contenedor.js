@@ -92,8 +92,20 @@
       montar(entrada);
     } catch (e) {
       if (miTurno !== turno) return;
-      raiz.innerHTML = '<p class="app-error">El micro frontend <b>' + entrada.nombre +
-        '</b> no está disponible en este momento. El resto de la aplicación sigue funcionando.</p>';
+      raiz.innerHTML =
+        '<div class="app-error">' +
+        '<p>El micro frontend <b>' + entrada.nombre +
+        '</b> no está disponible en este momento. El resto de la aplicación sigue funcionando.</p>' +
+        '<button id="btn-reintentar" type="button">Reintentar</button>' +
+        '</div>';
+
+      const btnReintentar = document.getElementById('btn-reintentar');
+
+      btnReintentar.addEventListener('click', function () {
+        delete scripts[entrada.url];
+        navegar();
+      });
+
       console.error(e);
     }
   }
